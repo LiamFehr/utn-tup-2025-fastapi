@@ -6,6 +6,8 @@ from database import create_db_and_tables
 from objects import objects_router
 from personas import router as personas_router
 from paises import router as paises_router
+from auth_router import router as auth_router
+from protected_endpoints import router as protected_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +29,10 @@ app.include_router(personas_router)
 app.include_router(paises_router)
 # Include objects router
 app.include_router(objects_router)
+# Include auth router
+app.include_router(auth_router)
+# Include protected endpoints router
+app.include_router(protected_router)
 
 # Add CORS middleware
 app.add_middleware(

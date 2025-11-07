@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
 from pydantic import BaseModel
+from datetime import datetime
 
 class PersonaBase(SQLModel):
     """Base model for Persona"""
@@ -59,3 +60,42 @@ class PaisUpdate(BaseModel):
 class PaisResponse(PaisBase):
     """Model for pais response"""
     id: int
+
+
+# User/Auth models
+class UserBase(SQLModel):
+    """Base model for User"""
+    username: str = Field(max_length=50, description="Username", unique=True)
+    email: str = Field(max_length=100, description="Email address")
+    is_active: bool = Field(default=True, description="User is active")
+
+class User(UserBase, table=True):
+    """User table model"""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    hashed_password: str = Field(description="Hashed password")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserCreate(BaseModel):
+    """Model for creating a new user"""
+    username: str = Field(max_length=50, description="Username")
+    email: str = Field(max_length=100, description="Email address")
+    password: str = Field(min_length=6, description="Password")
+
+class UserResponse(UserBase):
+    """Model for user response"""
+    id: int
+    created_at: datetime
+
+class UserLogin(BaseModel):
+    """Model for user login"""
+    username: str
+    password: str
+
+class Token(BaseModel):
+    """JWT Token response"""
+    access_token: str
+    token_type: str = "bearer"
+
+class TokenData(BaseModel):
+    """Token data for validation"""
+    username: Optional[str] = None
