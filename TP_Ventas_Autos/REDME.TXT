@@ -1,0 +1,158 @@
+# 🚗 TP VENTAS DE AUTOS - API REST
+
+Proyecto realizado con **FastAPI**, **SQLModel** y **PostgreSQL**  
+Trabajo Práctico – UTN TUP 2025  
+Alumno: *Liam F.*
+
+---
+
+## 🧾 Descripción
+
+API REST para la gestión de **autos** y **ventas de autos**.  
+Permite realizar **operaciones CRUD completas**, validaciones de datos, y conecta con una base de datos **PostgreSQL** usando ORM con **SQLModel / SQLAlchemy**.
+
+Incluye:
+
+- CRUD completo de Autos y Ventas  
+- Búsqueda avanzada con filtros  
+- Validaciones automáticas con FastAPI  
+- Regla de negocio: el `total` de una venta debe ser igual a `precio * cantidad`  
+- Conexión a PostgreSQL configurada desde `database.py`  
+
+---
+
+## ⚙️ Tecnologías utilizadas
+
+- 🐍 **Python 3.13**
+- ⚡ **FastAPI**
+- 🗄️ **SQLModel / SQLAlchemy**
+- 🐘 **PostgreSQL**
+- 🔌 **Uvicorn** (servidor ASGI)
+- 🧠 **Pydantic** (validaciones)
+- 💾 **psycopg2-binary** (driver PostgreSQL)
+
+---
+
+## 📁 Estructura del proyecto
+TP_Ventas_Autos/
+│── src/
+│ ├── main.py # App principal (FastAPI)
+│ ├── database.py # Conexión y sesión con PostgreSQL
+│ ├── models.py # Modelos y validaciones
+│ ├── autos.py # Endpoints CRUD y filtros para autos
+│ └── ventas.py # Endpoints CRUD con coherencia total en ventas
+│
+├── venv/ # Entorno virtual
+├── requirements.txt # Dependencias (opcional)
+└── README.md # Documentación del proyecto
+
+
+---
+
+## 🪬 Instalación y configuración
+
+### 1️⃣ Clonar el proyecto
+```bash
+git clone <url-del-proyecto>
+cd TP_Ventas_Autos
+2️⃣ Crear y activar entorno virtual
+bash
+Copy
+python -m venv venv
+venv\Scripts\activate      # En Windows
+3️⃣ Instalar dependencias
+bash
+Copy
+pip install fastapi uvicorn sqlmodel psycopg2-binary
+4️⃣ Crear la base de datos en PostgreSQL
+Desde pgAdmin o psql ejecutar:
+
+sql
+Copy
+CREATE DATABASE autosdb;
+5️⃣ Configurar credenciales
+Editar el archivo src/database.py y ajustar con tus valores:
+
+python
+Copy
+DATABASE_URL = "postgresql+psycopg2://postgres:1234@localhost:5432/autosdb"
+(donde 1234 es tu contraseña)
+
+🚀 Ejecutar el proyecto
+bash
+Copy
+python -m uvicorn src.main:app --reload
+📍 Servidor activo:
+
+http://127.0.0.1:8000
+📄 Documentación interactiva (Swagger UI):
+
+http://127.0.0.1:8000/docs
+🧱 Endpoints principales
+🔹 AUTOS
+Método	Endpoint	Descripción
+GET	/autos/	Lista todos los autos
+GET	/autos/{id}	Obtiene un auto por ID
+POST	/autos/	Crea un nuevo auto
+PUT	/autos/{id}	Actualiza un auto existente
+DELETE	/autos/{id}	Elimina un auto
+GET	/autos/buscar	Búsqueda filtrada (marca, modelo, año, precio)
+Ejemplo de cuerpo POST:
+
+json
+Copy
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "anio": 2022,
+  "precio": 8500000
+}
+🔹 VENTAS
+Método	Endpoint	Descripción
+GET	/ventas/	Lista todas las ventas
+GET	/ventas/{id}	Obtiene una venta por ID
+POST	/ventas/	Crea una nueva venta
+PUT	/ventas/{id}	Actualiza una venta existente
+DELETE	/ventas/{id}	Elimina una venta
+Ejemplo de cuerpo POST:
+
+json
+Copy
+{
+  "fecha": "2025-11-12",
+  "cantidad": 2,
+  "total": 17000000,
+  "auto_id": 1
+}
+⚠️ Si el total no coincide con precio * cantidad, la API devuelve error:
+
+json
+Copy
+{
+  "detail": "Total inconsistente. Debería ser 17000000 (= precio*cantidad)"
+}
+🧩 Validaciones incluidas
+Campo	Regla
+marca	Mínimo 1, máximo 50 caracteres
+modelo	Mínimo 1, máximo 50 caracteres
+anio	Mayor a 1900 y menor o igual a 2030
+precio	Mayor que 0
+cantidad	Mayor que 0
+total	Debe coincidir con precio*cantidad
+🧠 Regla de negocio
+Antes de guardar una venta, la API verifica:
+
+total == (precio_del_auto * cantidad)
+
+Si no se cumple, devuelve un HTTP 400 con mensaje explicativo.
+
+🧪 Ejemplo de flujo
+Crear un auto (POST /autos/)
+Crear una venta con ese auto (POST /ventas/)
+Consultar las ventas existentes (GET /ventas/)
+Eliminar o actualizar los datos según necesidad
+🖥️ Acceso a base de datos
+Una vez ejecutado, podés ver las tablas desde pgAdmin → autosdb → Schemas → public → Tables:
+
+auto
+venta
